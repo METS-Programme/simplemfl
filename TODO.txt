@@ -1,0 +1,32 @@
+- should facilities inherit from orgunit as separate class?
+- API search by any of the external IDs
+	- ID alone
+	- "agency::context::external_id" triplet
+- infrastructure for submissions with approval process
+	- existing
+	- new
+	* store proposed updates as JSON payloads to API calls (POST, PATCH)
+	* allow upload of confirming documents?
+	* allow comments/notes on update request
+		* canned reply text widget?
+	* generate human-readable output listing
+	* when approved run API call on endpoint
+	* allow multiple facility updates in one request?
+- API listing for ownerships, authorities, orgunit types?
+
+- Front page?
+	- summaries
+		* look at print MFL for inspiration
+	- coordinate coverage (total, by region, by type)
+
+===========================
+
+- string of coordinates
+	- basic support
+- GEO-JSON geometry string
+	- structured format
+	- easily store area (country, district, subcounty) and point geometries
+	- usable by Javascript mapping libraries
+- PostGIS database support
+	- geometry operations (contains, nearest)
+	- tiling support reduces bandwidth, increases performance (esp. mobile)
