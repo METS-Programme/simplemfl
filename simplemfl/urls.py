@@ -19,6 +19,7 @@ from django.contrib import admin
 from rest_framework import routers
 
 from facilities.views import OrgUnitViewSet, FacilityViewSet, AdminUnitViewSet
+import facilities.urls
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
@@ -27,6 +28,9 @@ router.register(r'adminunits', AdminUnitViewSet, base_name='adminunits')
 router.register(r'orgunits', OrgUnitViewSet)
 
 urlpatterns = [
+    url(r'^$', facilities.views.index),
+    url(r'', include(facilities.urls)),
+
     # Django Admin
     url(r'^admin/', admin.site.urls),
     # Django Rest Framework

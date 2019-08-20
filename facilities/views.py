@@ -39,3 +39,6 @@ class FacilityViewSet(viewsets.ModelViewSet):
     queryset = OrgUnit.objects.filter(~Q(orgunit_type='ADMIN'))
     serializer_class = OrgUnitSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+def index(request):
+    return render(request, 'facilities/index.html')
