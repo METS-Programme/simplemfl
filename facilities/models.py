@@ -168,7 +168,8 @@ class OrgUnit(MPTTModel):
 
     @property
     def geometry(self):
-        return self.geometry_str
+        import json
+        return json.loads(self.geometry_str)
 
     #TODO: create 'geometry' setter property that checks for valid (Geo)JSON
 
