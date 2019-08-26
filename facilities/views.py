@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.db.models import Q
+from django.conf import settings
 
 from rest_framework import serializers, viewsets
 from rest_framework import permissions
@@ -41,4 +42,23 @@ class FacilityViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 def index(request):
-    return render(request, 'facilities/index.html')
+    from django.db import connection
+
+    cursor = connection.cursor()
+
+    cursor.execute("select level, count(level) from facilities_orgunit group by level order by level asc")
+    rows = cursor.fetchall()
+    level_summary = [(settings.ORG_UNIT_LEVELS[level], count) for level,count in rows]
+
+    cursor.execute("select ownership, count(ownership) from facilities_orgunit group by ownership order by ownership asc")
+    rows = cursor.fetchall()
+    ownership_map = dict(OrgUnit.OWNERSHIP_CHOICES)
+    ownership_summary = [(ownership_map[ownership], count, (count/level_summary[-1][1])*100) for ownership,count in rows]
+
+    context = {
+        'level_summary': level_summary,
+        'total_facilities': level_summary[-1][1],
+        'ownership_summary': ownership_summary,
+    }
+
+    return render(request, 'facilities/index.html', context)

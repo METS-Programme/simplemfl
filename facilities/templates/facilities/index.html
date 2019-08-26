@@ -1,1 +1,41 @@
-Electronic Master Facility List: Kinda works!
+<html>
+<head>
+</head>
+<body>
+    <h1>Electronic Master Facility List: Kinda works!</h1>
+
+    <table style="font-family: sans-serif">
+    <thead style="color: white; background-color: black;">
+        <th>ADMINISTRATIVE LEVEL</th><th style="text-align: center">TOTAL</th>
+    </thead>
+    {% for level, count in level_summary %}
+        {% if forloop.last %}
+    <tr style="color: white; background-color: darkred;">
+        <td colspan="2"><span style="font-size: xx-large">{{ count }}</span><br/>{{ level|upper|slice:"-1" }}{{ count|pluralize:"Y,IES" }}</td>
+    </tr>
+        {% else %}
+    <tr>
+        <td>{{ level }}</td><td style="text-align: center">{{ count }}</td>
+    </tr>
+        {% endif %}
+    {% endfor %}
+    </table>
+
+    <hr/>
+
+    <table style="font-family: sans-serif">
+    <tr>
+    <td style="color: white; background-color: darkred;"><span style="font-size: xx-large">{{ total_facilities }}</span><br/>HEALTH FACILITIES<br/>IN UGANDA</td>
+    <td>
+    <table>
+    {% for ownership, count, ownership_pct in ownership_summary %}
+    <tr>
+        <td>{{ ownership|upper }}<br/>{{ count }} HEALTH FACILITIES<br/>{{ ownership_pct|floatformat:2 }} %</td>
+    </tr>
+    {% endfor %}
+    </table>
+    </td>
+    </tr>
+    </table>
+</body>
+</html>
