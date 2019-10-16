@@ -1,0 +1,186 @@
+{% load static %}
+<html>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <!-- Must come AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+    integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
+    <script src="{% static 'simplemfl/js/leaflet-providers.js' %}"></script>
+
+    
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900|Varela+Round" rel="stylesheet" />
+    <link href="{% static 'templated-reciprocal/default.css' %}" rel="stylesheet" type="text/css" media="all" />
+    <link href="{% static 'templated-reciprocal/fonts.css' %}" rel="stylesheet" type="text/css" media="all" />
+
+    <style>
+    #hospitals_map { height: 550px; width: 550px; }
+    table { border-collapse: collapse; }
+    th, td { padding: 6px; }
+    </style>
+    <title>{% block title %}Electronic MFL{% endblock %}</title>
+</head>
+<body>
+    <body>
+        <div id="wrapper">
+            <div id="header-wrapper">
+                <div id="header" class="container">
+                    <div id="logo">
+                        <h1>Electronic Master Facility List</h1>
+                        <!-- <p>Design by <a href="http://templated.co" rel="nofollow">TEMPLATED</a></p> -->
+                    </div>
+                    <!-- <div id="social">
+                        <ul class="contact">
+                            <li><a href="#" class="icon icon-twitter"><span>Twitter</span></a></li>
+                            <li><a href="#" class="icon icon-facebook"><span></span></a></li>
+                            <li><a href="#" class="icon icon-dribbble"><span>Pinterest</span></a></li>
+                            <li><a href="#" class="icon icon-tumblr"><span>Google+</span></a></li>
+                            <li><a href="#" class="icon icon-rss"><span>Pinterest</span></a></li>
+                        </ul>
+                    </div> -->
+                </div>
+                <div id="menu" class="container">
+                    <ul>
+                        <li class="current_page_item"><a href="{% url 'index' %}" accesskey="1" title="">Homepage</a></li>
+                        <li><a href="{% url 'api-root' %}" accesskey="2" title="">API</a></li>
+                        <li><a href="{% url 'admin:index' %}" accesskey="3" title="">Backend</a></li>
+                        <li><a href="{% url 'facilities-csv' %}" accesskey="4" title="">Download (Excel)</a></li>
+                        <li><a href="#" accesskey="5" title="">Contact Us</a></li>
+                        <!-- <li><a href="#" accesskey="1" title="">Services</a></li>
+                        <li><a href="#" accesskey="2" title="">Our Clients</a></li>
+                        <li><a href="#" accesskey="3" title="">About Us</a></li>
+                        <li><a href="#" accesskey="4" title="">Careers</a></li>
+                        <li><a href="#" accesskey="5" title="">Contact Us</a></li> -->
+                    </ul>
+                </div>
+            </div>
+            <div id="page" class="container">
+            {% block content %}
+            {% comment %}
+                <div class="column1">
+                    <!-- <div class="title">
+                        <h2>Maecenas luctus</h2>
+                        <span class="byline">Pellentesque lectus gravida blandit</span>
+                    </div>
+                    <p>This is <strong>Reciprocal</strong>, a free, fully standards-compliant CSS template designed by <a href="http://templated.co" rel="nofollow">TEMPLATED</a>. The photos in this template are from <a href="http://fotogrph.com/"> Fotogrph</a>. This free template is released under the <a href="http://templated.co/license">Creative Commons Attribution</a> license, so you're pretty much free to do whatever you want with it (even use it commercially) provided you give us credit for it. Have fun :) </p>
+                    <a href="#" class="button">Etiam posuere</a> -->
+                    <figure>
+                    <div id="hospitals_map"></div>
+                    <figcaption>Map of Hospitals (General and Referral)</figcaption>
+                    </figure>
+                    <script>
+                    var ugmap = L.map('hospitals_map').setView([1.368766, 32.434936], 7);
+                    var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
+                    OpenStreetMap_Mapnik.addTo(ugmap)
+                
+                    let xhr = new XMLHttpRequest();
+                    // xhr.open('GET', 'geojson/hospitals.json');
+                    xhr.open('GET', 'api/hospitals.json');
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.responseType = 'json';
+                    xhr.onload = function() {
+                    if (xhr.status !== 200) return
+                        L.geoJSON(xhr.response,{
+                            onEachFeature: function (feature, layer) {
+                                layer.bindPopup(feature.properties.name);
+                            }
+                        }).addTo(ugmap);
+                    };
+                    xhr.send();
+                    </script>
+                </div>
+                <div class="column3">
+                    <!-- <div class="title">
+                        <h2>Mauris vulputate</h2>
+                    </div>
+                    <img src="images/pic01.jpg" width="282" height="150" alt="" />
+                    <p>Phasellus tempor vehicula justo. Aliquam lacinia metus ut elit.</p>
+                     -->
+                    <div class="title">
+                        <h2>SUMMARY</h2>
+                    </div>
+                    <table id="admin_summary" style="border-collapse: collapse">
+                        <thead style="color: white; background-color: black;">
+                            <th>ADMINISTRATIVE LEVEL</th><th style="text-align: center">TOTAL</th>
+                        </thead>
+                        {% for level, count in level_summary %}
+                            {% if forloop.last %}
+                        <tr style="color: white; background-color: darkred;">
+                            <th scope="row" colspan="2"><span style="font-size: xx-large">{{ count }}</span><br/>{{ level|upper|slice:"-1" }}{{ count|pluralize:"Y,IES" }}</th>
+                        </tr>
+                            {% else %}
+                        <tr>
+                            <td>{{ level }}</td><td style="text-align: center">{{ count }}</td>
+                        </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                    <a href="#" class="button">Details ...</a>
+                </div>
+                <div class="column4">
+                    <div class="title">
+                        <h2>BY&nbsp;OWNERSHIP</h2>
+                    </div>
+                    <table id="ownership_summary">
+                        <tr>
+                        <th scope="row" style="color: white; background-color: darkred;"><span style="font-size: xx-large">{{ total_facilities }}</span><br/>HEALTH FACILITIES<br/>IN UGANDA</th>
+                        <td style="padding: 0px">
+                        <table>
+                        {% for ownership, count, ownership_pct in ownership_summary %}
+                        <tr>
+                            <td style="border: 1px solid black"><b>{{ ownership|upper }}</b><br/><i>{{ count }} HEALTH FACILITIES<br/>{{ ownership_pct|floatformat:2 }} %</i></td>
+                        </tr>
+                        {% endfor %}
+                        </table>
+                        </td>
+                        </tr>
+                    </table>
+                    <a href="#" class="button">Details ...</a>
+                </div>
+            {% endcomment %}
+            {% endblock content %}
+            </div>
+            <!-- <div id="portfolio-wrapper">
+                <div id="portfolio" class="container">
+                    <div class="title">
+                        <h2>Aenean elementum</h2>
+                        <span class="byline">Integer sit amet pede vel arcu aliquet pretium</span> </div>
+                    <div class="column1">
+                        <div class="box">
+                            <span class="icon icon-cloud-download"></span>
+                            <h3>Vestibulum venenatis</h3>
+                            <p>Fermentum nibh augue praesent a lacus at urna congue rutrum.</p>
+                            <a href="#" class="button">Etiam posuere</a> </div>
+                    </div>
+                    <div class="column2">
+                        <div class="box">
+                            <span class="icon icon-coffee"></span>
+                            <h3>Praesent scelerisque</h3>
+                            <p>Vivamus fermentum nibh in augue praesent urna congue rutrum.</p>
+                            <a href="#" class="button">Etiam posuere</a> </div>
+                    </div>
+                    <div class="column3">
+                        <div class="box">
+                            <span class="icon icon-globe"></span>
+                            <h3>Donec dictum metus</h3>
+                            <p>Vivamus fermentum nibh in augue praesent urna congue rutrum.</p>
+                            <a href="#" class="button">Etiam posuere</a> </div>
+                    </div>
+                    <div class="column4">
+                        <div class="box">
+                            <span class="icon icon-dashboard"></span>
+                            <h3>Mauris vulputate dolor</h3>
+                            <p>Rutrum fermentum nibh in augue praesent urna congue rutrum.</p>
+                            <a href="#" class="button">Etiam posuere</a> </div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+        <div id="footer">
+                <!-- <p>&copy; Untitled. All rights reserved. Design by <a href="http://templated.co" rel="nofollow">TEMPLATED</a>. Photos by <a href="http://fotogrph.com/">Fotogrph</a>.</p> -->
+            <p>&copy; Untitled. All rights reserved. Ministry of Health supported by METS programme of Makerere University - School of Public Health</p>
+        </div>
+</body>
+</html>

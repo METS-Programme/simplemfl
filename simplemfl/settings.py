@@ -40,10 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'django_extensions',
     'mptt',
     'rest_framework',
 
+    'simplemfl',
     'facilities',
     'simplemfl.apps.AuditLogConfig',
 ]

@@ -7,12 +7,12 @@ SECRET_KEY = '5bt%3jj6jgu474i0%oovg#0k+m6!tpx4740runvdq)znn7n&p-'
 DEBUG = True
 
 ALLOWED_HOSTS += ['127.0.0.1', 'localhost']
-ALLOWED_HOSTS += ['192.168.43.%d' % i for i in range(256)] 
 
 INTERNAL_IPS.append('127.0.0.1')
 
 
 INSTALLED_APPS += [
+    'django_extensions',
     'debug_toolbar',
 ]
 

@@ -18,7 +18,7 @@ from django.contrib import admin
 
 from rest_framework import routers
 
-from facilities.views import OrgUnitViewSet, FacilityViewSet, AdminUnitViewSet
+from facilities.views import OrgUnitViewSet, FacilityViewSet, AdminUnitViewSet, HospitalViewSet
 import facilities.urls
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -26,6 +26,8 @@ router = routers.DefaultRouter()
 router.register(r'facilities', FacilityViewSet, base_name='facilities')
 router.register(r'adminunits', AdminUnitViewSet, base_name='adminunits')
 router.register(r'orgunits', OrgUnitViewSet)
+router.register(r'hospitals', HospitalViewSet, base_name='hospitals')
+# router.register(r'geojson', GeoJSONOrgUnitViewSet, base_name='geojson')
 
 urlpatterns = [
     url(r'^$', facilities.views.index),

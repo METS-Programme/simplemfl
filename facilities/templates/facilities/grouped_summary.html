@@ -1,0 +1,25 @@
+{% extends "facilities/base.html" %}
+{% load static %}
+
+{% if page_title %}
+{% block title %}Electronic MFL: {{page_title}}{% endblock %}
+{% endif %}
+
+{% block content %}
+<table><tr><td style="vertical-align: top;">
+<table>
+{% for row in summary %}
+    {% ifchanged row.0 %}
+    {% if not forloop.first %}
+</table>
+</td>
+<td style="vertical-align: top; border-left: black solid thin;">
+<table>
+    {% endif %}
+    <tr><th colspan="{{row|length}}">{{row.0}}</th></tr>
+    {% endifchanged %}
+    <tr>{% for item in row %}{% if forloop.first%}<td>&nbsp;</td>{% else %}<td>{{ item }}</td>{% endif %}{% endfor %}</tr>
+{% endfor %}
+</table>
+</td></tr></table>
+{% endblock content %}

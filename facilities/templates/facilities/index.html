@@ -1,41 +1,82 @@
-<html>
-<head>
-</head>
-<body>
-    <h1>Electronic Master Facility List: Kinda works!</h1>
+{% extends "facilities/base.html" %}
+{% load static %}
 
-    <table style="font-family: sans-serif">
-    <thead style="color: white; background-color: black;">
-        <th>ADMINISTRATIVE LEVEL</th><th style="text-align: center">TOTAL</th>
-    </thead>
-    {% for level, count in level_summary %}
-        {% if forloop.last %}
-    <tr style="color: white; background-color: darkred;">
-        <td colspan="2"><span style="font-size: xx-large">{{ count }}</span><br/>{{ level|upper|slice:"-1" }}{{ count|pluralize:"Y,IES" }}</td>
-    </tr>
-        {% else %}
-    <tr>
-        <td>{{ level }}</td><td style="text-align: center">{{ count }}</td>
-    </tr>
-        {% endif %}
-    {% endfor %}
-    </table>
+{% block title %}Electronic MFL: Home{% endblock %}
 
-    <hr/>
-
-    <table style="font-family: sans-serif">
-    <tr>
-    <td style="color: white; background-color: darkred;"><span style="font-size: xx-large">{{ total_facilities }}</span><br/>HEALTH FACILITIES<br/>IN UGANDA</td>
-    <td>
-    <table>
-    {% for ownership, count, ownership_pct in ownership_summary %}
-    <tr>
-        <td>{{ ownership|upper }}<br/>{{ count }} HEALTH FACILITIES<br/>{{ ownership_pct|floatformat:2 }} %</td>
-    </tr>
-    {% endfor %}
-    </table>
-    </td>
-    </tr>
-    </table>
-</body>
-</html>
+{% block content %}
+    <div class="column1">
+        <figure>
+        <div id="hospitals_map"></div>
+        <figcaption>Map of Hospitals (General and Referral)</figcaption>
+        </figure>
+        <script>
+        var ugmap = L.map('hospitals_map').setView([1.368766, 32.434936], 7);
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
+        OpenStreetMap_Mapnik.addTo(ugmap)
+    
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', 'api/hospitals.json');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.responseType = 'json';
+        xhr.onload = function() {
+        if (xhr.status !== 200) return
+            L.geoJSON(xhr.response,{
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.name);
+                }
+            }).addTo(ugmap);
+        };
+        xhr.send();
+        </script>
+    </div>
+    <div class="column3">
+        <!-- <div class="title">
+            <h2>Mauris vulputate</h2>
+        </div>
+        <img src="images/pic01.jpg" width="282" height="150" alt="" />
+        <p>Phasellus tempor vehicula justo. Aliquam lacinia metus ut elit.</p>
+            -->
+        <div class="title">
+            <h2>SUMMARY</h2>
+        </div>
+        <table id="admin_summary" style="border-collapse: collapse">
+            <thead style="color: white; background-color: black;">
+                <th>ADMINISTRATIVE LEVEL</th><th style="text-align: center">TOTAL</th>
+            </thead>
+            {% for level, count in level_summary %}
+                {% if forloop.last %}
+            <tr style="color: white; background-color: darkred;">
+                <th scope="row" colspan="2"><span style="font-size: xx-large">{{ count }}</span><br/>{{ level|upper|slice:"-1" }}{{ count|pluralize:"Y,IES" }}</th>
+            </tr>
+                {% else %}
+            <tr>
+                <td>{{ level }}</td><td style="text-align: center">{{ count }}</td>
+            </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <a href="{% url 'region-by-type' %}" class="button">Details ...</a>
+    </div>
+    <div class="column4">
+        <div class="title">
+            <h2>BY&nbsp;OWNERSHIP</h2>
+        </div>
+        <table id="ownership_summary">
+            <tr>
+            <th scope="row" style="color: white; background-color: darkred;"><span style="font-size: xx-large">{{ total_facilities }}</span><br/>HEALTH FACILITIES<br/>IN UGANDA</th>
+            <td style="padding: 0px">
+            <table>
+            {% for ownership, count, ownership_pct in ownership_summary %}
+            <tr>
+                <td style="border: 1px solid black"><b>{{ ownership|upper }}</b><br/><i>{{ count }} HEALTH FACILITIES<br/>{{ ownership_pct|floatformat:2 }} %</i></td>
+            </tr>
+            {% endfor %}
+            </table>
+            </td>
+            </tr>
+        </table>
+        <a href="#" class="button">Details ...</a>
+    </div>
+{% endblock content %}

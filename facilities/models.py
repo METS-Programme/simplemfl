@@ -170,11 +170,15 @@ class OrgUnit(MPTTModel):
     def geometry(self):
         import json
         if self.geometry_str:
-        return json.loads(self.geometry_str)
+            return json.loads(self.geometry_str)
         else:
             return None
 
     #TODO: create 'geometry' setter property that checks for valid (Geo)JSON
+
+    @property
+    def identifiers_flat(self):
+        return [str(x) for x in self.identifiers.all()]
 
     def __str__(self):
         return '%s [parent_id: %s]' % (self.name, str(self.parent_id),)
