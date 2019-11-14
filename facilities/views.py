@@ -73,15 +73,16 @@ def index(request):
     cursor.execute("select level, count(level) from facilities_orgunit group by level order by level asc")
     rows = cursor.fetchall()
     level_summary = [(settings.ORG_UNIT_LEVELS[level], count) for level,count in rows]
+    total_facilities = 0 if len(level_summary) == 0 else level_summary[-1][1]
 
     cursor.execute("select ownership, count(ownership) from facilities_orgunit group by ownership order by ownership asc")
     rows = cursor.fetchall()
     ownership_map = dict(OrgUnit.OWNERSHIP_CHOICES)
-    ownership_summary = [(ownership_map[ownership], count, (count/level_summary[-1][1])*100) for ownership,count in rows]
+    ownership_summary = [(ownership_map[ownership], count, (count/total_facilities)*100) for ownership,count in rows]
 
     context = {
         'level_summary': level_summary,
-        'total_facilities': level_summary[-1][1],
+        'total_facilities': total_facilities,
         'ownership_summary': ownership_summary,
     }
 
