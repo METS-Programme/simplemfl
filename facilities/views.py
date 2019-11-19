@@ -16,6 +16,10 @@ from rest_framework import permissions
 
 from facilities.models import OrgUnit, Identifier
 
+ORGUNIT_TYPE_MAP = dict(OrgUnit.ORGUNIT_TYPE_CHOICES)
+OWNERSHIP_MAP = dict(OrgUnit.OWNERSHIP_CHOICES)
+AUTHORITY_MAP = dict(OrgUnit.AUTHORITY_CHOICES)
+
 # Serializers define the API representation.
 class IdentifierSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,6 +36,14 @@ class OrgUnitSerializer(serializers.HyperlinkedModelSerializer):
 def ou_to_geojson_obj(ou):
     geo_dict = dict(list([('type', 'Feature'), ('geometry', ou.get('geometry'))]))
     geo_dict['properties'] = dict([(k,v) for k,v in ou.items() if k!='geometry'])
+    for k,v in geo_dict['properties'].items():
+        if k in ('orgunit_type', 'ownership', 'authority'):
+            if v in ORGUNIT_TYPE_MAP:
+                geo_dict['properties'][k] = ORGUNIT_TYPE_MAP[v]
+            if v in OWNERSHIP_MAP:
+                geo_dict['properties'][k] = OWNERSHIP_MAP[v]
+            if v in AUTHORITY_MAP:
+                geo_dict['properties'][k] = AUTHORITY_MAP[v]
     return geo_dict
 
 class GeoJSONOrgUnitSerializer(OrgUnitSerializer):
@@ -77,8 +89,7 @@ def index(request):
 
     cursor.execute("select ownership, count(ownership) from facilities_orgunit group by ownership order by ownership asc")
     rows = cursor.fetchall()
-    ownership_map = dict(OrgUnit.OWNERSHIP_CHOICES)
-    ownership_summary = [(ownership_map[ownership], count, (count/total_facilities)*100) for ownership,count in rows]
+    ownership_summary = [(OWNERSHIP_MAP[ownership], count, (count/total_facilities)*100) for ownership,count in rows]
 
     context = {
         'level_summary': level_summary,
@@ -106,8 +117,7 @@ def region_type_summary(request):
 
     cursor.execute(sql_str)
     rows = cursor.fetchall()
-    orgunit_type_map = dict(OrgUnit.ORGUNIT_TYPE_CHOICES)
-    region_type_summary = [(name, orgunit_type_map[orgunit_type], count) for name, orgunit_type, count in rows]
+    region_type_summary = [(name, ORGUNIT_TYPE_MAP[orgunit_type], count) for name, orgunit_type, count in rows]
 
     context = {
         'page_title': 'Regions broken down by Facility Type',
