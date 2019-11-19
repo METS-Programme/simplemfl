@@ -47,7 +47,7 @@ class OrgUnit(MPTTModel):
 
     # TODO: find_proximity() - given a set of coordinates, return a list orgunits that might match at all levels (nearest hf, subcounties, district ...)
     # Build crude bounding box for admin units based on facilities with coordinates within them?
-    geometry_str = models.TextField(null=True, verbose_name='geometry (GeoJSON string)')
+    geometry_str = models.TextField(blank=True, default='', verbose_name='geometry (GeoJSON string)')
 
     ORGUNIT_TYPE_CHOICES = (
         ('ADMIN', 'Administrative Unit'),
