@@ -99,6 +99,17 @@ def index(request):
 
     return render(request, 'facilities/index.html', context)
 
+def orgunit_and_children(request, ou_uuid):
+    # TODO: when orgunit uuid not supplied default to top-level orgunit
+    # TODO: display error for non-existent or invalid UUID
+    ou = OrgUnit.objects.get(uuid=ou_uuid)
+    context = {
+        'orgunit': ou,
+    }
+
+    return render(request, 'facilities/orgunit_detail.html', context)
+
+
 def region_type_summary(request):
     from django.db import connection
     cursor = connection.cursor()

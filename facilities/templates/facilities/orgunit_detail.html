@@ -1,0 +1,103 @@
+{% extends "facilities/base.html" %}
+{% load static %}
+
+{% load mptt_tags %}
+
+{% block title %}Electronic MFL: Listing{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% for ancestor in orgunit.get_ancestors %}
+    <a href="{% url 'listing' ancestor.uuid %}">{{ ancestor.name }}</a>
+    {% if not forloop.last %}
+    >>
+    {% endif %}
+    {% endfor %}
+</div>
+<div class="container">
+    <div class="column1">
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Ownership</th>
+                <th>Authority</th>
+                <th>Map</th>
+                <th>Misc.</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ orgunit.name }}</td>
+                    <td>{{ orgunit.orgunit_type }}</td>
+                    <td>{{ orgunit.ownership }}</td>
+                    <td>{{ orgunit.authority }}</td>
+                    <td>
+                        {% if orgunit.geometry %}
+                        <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{orgunit.geometry.coordinates.1}},{{orgunit.geometry.coordinates.0}}">
+                        Latitude: {{orgunit.geometry.coordinates.1}}, Longitude: {{orgunit.geometry.coordinates.0}}
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td>some stuff...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% if orgunit.level < 4 %}
+    <div class="column2">
+        {% for child in orgunit.get_children %}
+        {% if forloop.first %}
+        <table>
+                <thead>
+                    <th>Subdivisions</th>
+                </thead>
+                <tbody>
+        {% endif %}
+                    <tr>
+                        <td><a href="{% url 'listing' child.uuid %}">{{ child.name }}</a></td>
+                    </tr>
+        {% if forloop.last %}
+                </tbody>
+        </table>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+<div class="container">
+    {% if orgunit.level >= 4 %}
+    <!-- {% for child in orgunit.get_descendants %}
+        {% if forloop.first %}
+        <table>
+                <thead>
+                    <th>All Facilities under {{ orgunit.name }}</th>
+                </thead>
+                <tbody>
+        {% endif %}
+        {% if child.level == 5 %}
+                    <tr>
+                        <td><a href="{% url 'listing' child.uuid %}">{{ child.name }}</a> [{{ child.ownership }}, {{ child.authority }}]</td>
+                    </tr>
+        {% endif %}
+        {% if forloop.last %}
+                </tbody>
+        </table>
+        {% endif %}
+    {% endfor %} -->
+    <ul class="root">
+        {% recursetree orgunit.get_descendants %}
+            <li>
+                <a href="{% url 'listing' node.uuid %}">{{ node.name }}</a>
+                {% if not node.is_leaf_node %}
+                    <ul class="children">
+                        {{ children }}
+                    </ul>
+                {% else %}
+                <span style="font-size: smaller;">[{{ node.ownership }}, {{ node.authority }}]</span>
+                {% endif %}
+            </li>
+        {% endrecursetree %}
+    </ul>
+    {% endif %}
+</div>
+{% endblock content %}
